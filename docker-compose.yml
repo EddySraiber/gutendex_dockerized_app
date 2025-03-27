@@ -8,8 +8,6 @@ services:
       POSTGRES_DB: gutendex
       POSTGRES_USER: gutendex
       POSTGRES_PASSWORD: gutendex_password
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -17,6 +15,46 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - gutendex_network
+
+  app:
+    build:
+      context: .
+      dockerfile: app.Dockerfile
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - ALLOWED_HOSTS=localhost,127.0.0.1,app
+      - DATABASE_HOST=db
+      - DATABASE_NAME=gutendex
+      - DATABASE_USER=gutendex
+      - DATABASE_PASSWORD=gutendex_password
+      - DATABASE_PORT=5432
+      - DEBUG=true
+      - SECRET_KEY=change_me_in_production
+      - STATIC_ROOT=/app/staticfiles
+      - MEDIA_ROOT=/app/media
+      - ADMIN_EMAILS=admin@example.com
+      - ADMIN_NAMES=Admin
+      - MANAGER_EMAILS=manager@example.com
+      - MANAGER_NAMES=Manager
+      - EMAIL_HOST=none
+      - EMAIL_HOST_ADDRESS=none
+      - EMAIL_HOST_USER=none
+      - EMAIL_HOST_PASSWORD=none
+    volumes:
+      - catalog_data:/app/catalog_files
+    ports:
+      - "8000:8000"
+    networks:
+      - gutendex_network
+
+networks:
+  gutendex_network:
 
 volumes:
   postgres_data:
+  catalog_data:
