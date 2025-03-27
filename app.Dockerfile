@@ -43,6 +43,11 @@ COPY static/ ./static/
 RUN mkdir -p /app/staticfiles
 RUN mkdir -p /app/media
 RUN mkdir -p /app/catalog_files
+RUN mkdir -p /app/catalog_files/tmp
+
+# Copy the catalog
+# COPY ./catalog/ /app/catalog_files/tmp/
+COPY ./catalog_files/tmp/catalog/cache/epub/ /app/catalog_files/rdf/
 
 # Copy and make entrypoint executable
 COPY docker-entrypoint.sh .

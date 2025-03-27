@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:14
@@ -16,7 +14,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - gutendex_network
+      - backend_network
 
   app:
     build:
@@ -33,7 +31,6 @@ services:
       - DATABASE_USER=gutendex
       - DATABASE_PASSWORD=gutendex_password
       - DATABASE_PORT=5432
-      - DEBUG=true
       - SECRET_KEY=change_me_in_production
       - STATIC_ROOT=/app/staticfiles
       - MEDIA_ROOT=/app/media
@@ -45,16 +42,32 @@ services:
       - EMAIL_HOST_ADDRESS=none
       - EMAIL_HOST_USER=none
       - EMAIL_HOST_PASSWORD=none
+      - DEBUG=true
+      - ALLOWED_HOSTS=localhost,127.0.0.1,nginx 
     volumes:
-      - catalog_data:/app/catalog_files
-    ports:
-      - "8000:8000"
+      - gutendex_data:/app/catalog_files/tmp
+    expose: 
+      - 8000
     networks:
-      - gutendex_network
+      - frontend_network
+      - backend_network
+
+  nginx:
+    image: nginx:stable-alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./static:/static # include catalog files as well
+    ports:
+      - 80:80
+    depends_on:
+      - app
+    networks:
+      - frontend_network
 
 networks:
-  gutendex_network:
+  backend_network:
+  frontend_network:
 
 volumes:
   postgres_data:
-  catalog_data:
+  gutendex_data:

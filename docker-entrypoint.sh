@@ -36,7 +36,7 @@ fi
 echo "=== Contents after extraction ==="
 find /app/catalog_files/tmp -type d
 
-# Check if catalog data needs to be loaded
+# # Check if catalog data needs to be loaded
 BOOK_COUNT=$(python -c "
 import os
 import django
