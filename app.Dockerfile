@@ -22,9 +22,12 @@ WORKDIR /app
 
 # Install runtime dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    libpq5 \
-    && rm -rf /var/lib/apt/lists/*
+apt-get install -y --no-install-recommends \
+gcc \
+libc6-dev \
+libpq-dev \
+rsync \
+&& rm -rf /var/lib/apt/lists/*
 
 # Copy installed packages from builder stage
 COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
